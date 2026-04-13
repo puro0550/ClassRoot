@@ -2,8 +2,9 @@ import os
 import sys
 import json
 import re
+import time
 import webbrowser
-from threading import Timer
+from threading import Timer, Thread
 from flask import Flask, request, redirect, url_for, render_template, abort, flash, send_from_directory
 from db import get_connection, init_db
 from alunos import remover_aluno, trocar_turma
@@ -41,6 +42,28 @@ def serve_pdfs_externos(filename):
 
 # Inicializa o banco se não existir
 init_db()
+
+# ===============================
+# HEARTBEAT (Auto-Shutdown)
+# ===============================
+last_heartbeat = time.time()
+
+@app.route("/heartbeat")
+def heartbeat():
+    global last_heartbeat
+    last_heartbeat = time.time()
+    return "", 204
+
+def _watchdog():
+    """Encerra o servidor se o navegador parar de responder."""
+    while True:
+        time.sleep(5)
+        if time.time() - last_heartbeat > 10:
+            os._exit(0)
+
+# Só ativa em modo executável (.exe)
+if getattr(sys, 'frozen', False):
+    Thread(target=_watchdog, daemon=True).start()
 
 # ===============================
 # LISTAR TURMAS

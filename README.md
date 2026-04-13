@@ -107,7 +107,7 @@ O ClassRoot é um sistema portátil. Você pode baixar a versão pronta para uso
 ### Para Desenvolvedores:
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/classroot
+git clone https://github.com/puro0550/classroot
 cd classroot
 
 # Instale as dependências
